@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Governance Trail</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #EFF2EA;
+    --paper: #FBFCF9;
+    --ink: #16241F;
+    --muted: #5B6B62;
+    --pine: #2F6B4F;
+    --pine-dark: #1F4B39;
+    --gold: #C98A3E;
+    --gold-soft: #F1DDB8;
+    --line: #D8DFD3;
+    --learn: #3E7C9E;
+    --project: #A0522D;
+    --linkedin: #2F6B4F;
+    --exam: #C98A3E;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:0 0 80px 0;
+  }
+  h1,h2,h3,.display{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+  a{color:var(--pine-dark);}
+
+  /* ---------- Header ---------- */
+  .hero{
+    max-width:920px;
+    margin:0 auto;
+    padding:52px 24px 28px 24px;
+  }
+  .hero h1{
+    font-size:clamp(32px, 5vw, 46px);
+    line-height:1.08;
+    margin:0 0 12px 0;
+    color:var(--pine-dark);
+  }
+  .hero p.sub{
+    font-size:17px;
+    color:var(--muted);
+    max-width:52ch;
+    line-height:1.55;
+    margin:0 0 30px 0;
+  }
+
+  /* progress card */
+  .progress-card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:22px 26px;
+    display:flex;
+    align-items:center;
+    gap:24px;
+    flex-wrap:wrap;
+  }
+  .ring-wrap{position:relative; width:88px; height:88px; flex-shrink:0;}
+  .ring-wrap svg{transform:rotate(-90deg);}
+  .ring-bg{fill:none; stroke:var(--line); stroke-width:9;}
+  .ring-fg{fill:none; stroke:var(--pine); stroke-width:9; stroke-linecap:round; transition:stroke-dashoffset 0.5s ease;}
+  .ring-label{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces', serif; font-weight:600; font-size:20px; color:var(--pine-dark);
+  }
+  .progress-text{flex:1; min-width:200px;}
+  .progress-text .headline{font-size:16px; font-weight:600; margin-bottom:4px;}
+  .progress-text .detail{font-size:14px; color:var(--muted);}
+  .milestones{display:flex; gap:8px; flex-wrap:wrap;}
+  .milestone-chip{
+    font-size:12px; padding:5px 11px; border-radius:100px;
+    background:#EAEEE6; color:var(--muted); border:1px solid var(--line);
+  }
+  .milestone-chip.hit{background:var(--gold-soft); color:#7A5620; border-color:var(--gold);}
+
+  /* filter chips */
+  .filters{
+    max-width:920px; margin:26px auto 0 auto; padding:0 24px;
+    display:flex; gap:10px; flex-wrap:wrap;
+  }
+  .chip{
+    font-family:'Work Sans', sans-serif;
+    font-size:14px; font-weight:600;
+    padding:8px 16px; border-radius:100px;
+    border:1px solid var(--line);
+    background:var(--paper);
+    color:var(--muted);
+    cursor:pointer;
+    display:flex; align-items:center; gap:7px;
+    transition:all .15s ease;
+  }
+  .chip .dot{width:8px; height:8px; border-radius:50%;}
+  .chip.active{border-color:transparent; color:#fff;}
+  .chip[data-cat="learn"].active{background:var(--learn);}
+  .chip[data-cat="project"].active{background:var(--project);}
+  .chip[data-cat="linkedin"].active{background:var(--linkedin);}
+  .chip[data-cat="exam"].active{background:var(--exam);}
+  .chip[data-cat="all"].active{background:var(--pine-dark);}
+
+  /* ---------- Trail ---------- */
+  .trail{
+    max-width:920px; margin:34px auto 0 auto; padding:0 24px;
+    position:relative;
+  }
+  .trail::before{
+    content:"";
+    position:absolute;
+    left:39px; top:8px; bottom:8px;
+    width:2px;
+    background:repeating-linear-gradient(to bottom, var(--line) 0 6px, transparent 6px 12px);
+  }
+  .phase-label{
+    font-size:13px; font-weight:600; color:var(--muted);
+    margin:36px 0 14px 62px;
+    text-transform:none;
+  }
+  .phase-label:first-child{margin-top:0;}
+
+  .week{
+    position:relative;
+    margin-left:62px;
+    margin-bottom:14px;
+  }
+  .week-marker{
+    position:absolute;
+    left:-62px; top:14px;
+    width:32px; height:32px;
+    border-radius:50%;
+    background:var(--paper);
+    border:2px solid var(--pine);
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px; font-weight:700; color:var(--pine-dark);
+    z-index:2;
+  }
+  .week.complete .week-marker{background:var(--pine); color:#fff; border-color:var(--pine);}
+
+  .week-card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:16px;
+    overflow:hidden;
+  }
+  .week-head{
+    padding:16px 20px;
+    display:flex; align-items:center; justify-content:space-between;
+    cursor:pointer;
+    gap:14px;
+  }
+  .week-head:hover{background:#F4F6F1;}
+  .week-title{font-size:17px; font-weight:600; font-family:'Fraunces', serif;}
+  .week-title .range{color:var(--muted); font-size:13px; font-weight:400; font-family:'Work Sans',sans-serif; display:block; margin-top:2px;}
+  .week-progress{
+    font-size:13px; color:var(--muted); white-space:nowrap;
+    display:flex; align-items:center; gap:8px;
+  }
+  .mini-bar{width:64px; height:6px; background:var(--line); border-radius:4px; overflow:hidden;}
+  .mini-bar-fill{height:100%; background:var(--pine); border-radius:4px;}
+  .chevron{transition:transform .2s ease; color:var(--muted); flex-shrink:0;}
+  .week.open .chevron{transform:rotate(90deg);}
+
+  .week-body{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .3s ease;
+  }
+  .week.open .week-body{max-height:2000px;}
+  .task-list{padding:4px 20px 18px 20px; display:flex; flex-direction:column; gap:2px;}
+
+  .task{
+    display:flex; align-items:flex-start; gap:12px;
+    padding:11px 8px;
+    border-radius:10px;
+    border-left:3px solid transparent;
+  }
+  .task[data-cat="learn"]{border-left-color:var(--learn);}
+  .task[data-cat="project"]{border-left-color:var(--project);}
+  .task[data-cat="linkedin"]{border-left-color:var(--linkedin);}
+  .task[data-cat="exam"]{border-left-color:var(--exam);}
+  .task.hidden{display:none;}
+
+  .task input[type="checkbox"]{
+    appearance:none; -webkit-appearance:none;
+    width:19px; height:19px; margin-top:2px;
+    border:2px solid var(--line);
+    border-radius:6px;
+    cursor:pointer;
+    flex-shrink:0;
+    position:relative;
+    background:#fff;
+    transition:all .15s ease;
+  }
+  .task input[type="checkbox"]:checked{
+    background:var(--pine); border-color:var(--pine);
+  }
+  .task input[type="checkbox"]:checked::after{
+    content:"";
+    position:absolute; left:5px; top:1px;
+    width:5px; height:9px;
+    border:solid white; border-width:0 2px 2px 0;
+    transform:rotate(45deg);
+  }
+  .task-text{flex:1; font-size:14.5px; line-height:1.5;}
+  .task.done .task-text .label{color:var(--muted); text-decoration:line-through;}
+  .task-text .label{display:block; font-weight:500;}
+  .task-text .meta{display:block; font-size:12.5px; color:var(--muted); margin-top:2px;}
+  .task-text a.res-link{
+    display:inline-block; margin-top:5px; font-size:13px; font-weight:600;
+    color:var(--pine-dark); text-decoration:underline; text-decoration-color:var(--gold);
+    text-underline-offset:3px;
+  }
+  .cat-tag{
+    font-size:11px; font-weight:700; padding:2px 8px; border-radius:100px;
+    color:#fff; white-space:nowrap; margin-top:2px; flex-shrink:0;
+  }
+  .cat-tag.learn{background:var(--learn);}
+  .cat-tag.project{background:var(--project);}
+  .cat-tag.linkedin{background:var(--linkedin);}
+  .cat-tag.exam{background:var(--exam);}
+
+  .cost-note{
+    max-width:920px; margin:30px auto 0 auto; padding:20px 24px;
+  }
+  .cost-card{
+    background:var(--pine-dark); color:#EFF2EA;
+    border-radius:16px; padding:22px 26px;
+    display:flex; gap:24px; flex-wrap:wrap;
+  }
+  .cost-card .item{flex:1; min-width:180px;}
+  .cost-card .item .amt{font-family:'Fraunces',serif; font-size:24px; font-weight:600; color:var(--gold-soft);}
+  .cost-card .item .desc{font-size:13px; color:#C9D3C6; margin-top:4px; line-height:1.5;}
+
+  .footer-note{
+    max-width:920px; margin:24px auto 0 auto; padding:0 24px 20px 24px;
+    font-size:13px; color:var(--muted); line-height:1.6;
+  }
+
+  @media (max-width:600px){
+    .trail::before{left:31px;}
+    .phase-label{margin-left:50px;}
+    .week{margin-left:50px;}
+    .week-marker{left:-50px; width:28px; height:28px; font-size:12px;}
+    .week-title{font-size:16px;}
+    .progress-card{padding:18px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>The Governance Trail</h1>
+  <p class="sub">Your 14-week path from CSE (AI/ML) grad to AI Governance / GRC-ready candidate — one week at a time, nothing all at once.</p>
+
+  <div class="progress-card">
+    <div class="ring-wrap">
+      <svg width="88" height="88" viewBox="0 0 88 88">
+        <circle class="ring-bg" cx="44" cy="44" r="38"></circle>
+        <circle class="ring-fg" id="ringFg" cx="44" cy="44" r="38" stroke-dasharray="238.76" stroke-dashoffset="238.76"></circle>
+      </svg>
+      <div class="ring-label" id="ringLabel">0%</div>
+    </div>
+    <div class="progress-text">
+      <div class="headline" id="progHeadline">Let's begin the trail</div>
+      <div class="detail" id="progDetail">0 of 0 steps complete</div>
+    </div>
+    <div class="milestones" id="milestones">
+      <span class="milestone-chip" data-m="25">Trailhead cleared · 25%</span>
+      <span class="milestone-chip" data-m="50">Halfway camp · 50%</span>
+      <span class="milestone-chip" data-m="75">Summit push · 75%</span>
+      <span class="milestone-chip" data-m="100">Trail's end · 100%</span>
+    </div>
+  </div>
+</div>
+
+<div class="filters" id="filters">
+  <div class="chip active" data-cat="all"><span class="dot" style="background:#16241F"></span>Everything</div>
+  <div class="chip" data-cat="learn"><span class="dot" style="background:#3E7C9E"></span>Learning</div>
+  <div class="chip" data-cat="project"><span class="dot" style="background:#A0522D"></span>Projects</div>
+  <div class="chip" data-cat="linkedin"><span class="dot" style="background:#2F6B4F"></span>LinkedIn</div>
+  <div class="chip" data-cat="exam"><span class="dot" style="background:#C98A3E"></span>Exam & Certs</div>
+</div>
+
+<div class="trail" id="trail"></div>
+
+<div class="cost-note">
+  <div class="cost-card">
+    <div class="item">
+      <div class="amt">₹0</div>
+      <div class="desc">Weeks 1–4 — everything is free reading and free courses. No spending needed yet.</div>
+    </div>
+    <div class="item">
+      <div class="amt">~₹67,000</div>
+      <div class="desc">Minimum total if you only sit the AIGP exam (Week 11) and skip ISO 42001.</div>
+    </div>
+    <div class="item">
+      <div class="amt">~₹77,000</div>
+      <div class="desc">Recommended total including AIGP + ISO 42001 Foundation, spread across 3–4 months.</div>
+    </div>
+  </div>
+</div>
+
+<div class="footer-note">
+  Your progress is saved automatically as you check things off — close this and come back anytime, the trail remembers where you left off. Pace guide only: if a week takes you longer, that's fine, the order matters more than the calendar.
+</div>
+
+<script>
+const CATS = {
+  learn: {label:"Learning"},
+  project: {label:"Project"},
+  linkedin: {label:"LinkedIn"},
+  exam: {label:"Exam & Cert"}
+};
+
+const weeks = [
+  { phase: "Foundation — building vocabulary, free only", num:1, range:"Week 1", tasks:[
+    {cat:"learn", label:"Complete: Embrace Responsible AI Principles and Practices", meta:"Microsoft Learn · free · 3-4 hrs", link:"https://learn.microsoft.com/en-us/training/modules/embrace-responsible-ai-principles-practices/"},
+    {cat:"learn", label:"Complete: Fundamentals of Responsible Generative AI", meta:"Microsoft Learn · free · 2-3 hrs", link:"https://learn.microsoft.com/en-us/training/modules/responsible-generative-ai/"},
+    {cat:"linkedin", label:"Update headline: 'CSE (AI/ML) | Exploring AI Governance & Responsible AI | Ex-annotation/QC @ Deccan AI'", meta:"Day 1"},
+    {cat:"linkedin", label:"Post: why you're moving from AI annotation/QC into AI governance", meta:"Day 3 · your personal 'why'"},
+    {cat:"linkedin", label:"Post: summarize the 6 Responsible AI principles in your own words", meta:"Day 6"},
+  ]},
+  { phase: null, num:2, range:"Week 2", tasks:[
+    {cat:"learn", label:"Work through AI-900: Azure AI Fundamentals training path", meta:"Microsoft Learn · free · skip the paid exam for now", link:"https://learn.microsoft.com/en-us/training/paths/get-started-with-artificial-intelligence-on-azure/"},
+    {cat:"learn", label:"Complete Google AI Essentials", meta:"Coursera · audit for free, uncheck 'buy certificate' · 1 week", link:"https://www.coursera.org/learn/google-ai-essentials"},
+    {cat:"linkedin", label:"Post: 3 things you learned from NIST's Govern / Map / Measure / Manage", meta:"Day 1"},
+    {cat:"linkedin", label:"Post: EU AI Act's 4 risk tiers with 1 example use case each", meta:"Day 4"},
+    {cat:"linkedin", label:"Comment thoughtfully on 3 posts from people with 'GRC' or 'AI Governance' in their title", meta:"Day 6 · engagement only, no post"},
+  ]},
+  { phase: "Primary sources — read the real frameworks yourself", num:3, range:"Week 3", tasks:[
+    {cat:"learn", label:"Read NIST AI Risk Management Framework 1.0", meta:"nist.gov · free · this is literally what AIGP tests you on", link:"https://www.nist.gov/itl/ai-risk-management-framework"},
+    {cat:"project", label:"Project 1 — AI Risk Assessment: pick a real/public AI system, assess it using NIST's Govern/Map/Measure/Manage", meta:"Output: 1-2 page doc"},
+    {cat:"linkedin", label:"Post your Project 1 risk assessment", meta:"Day 1 · portfolio piece #1 goes live"},
+    {cat:"linkedin", label:"React to a real news story on EU AI Act enforcement or an AI governance failure", meta:"Day 4"},
+  ]},
+  { phase: null, num:4, range:"Week 4", tasks:[
+    {cat:"learn", label:"Read the EU AI Act (official text + explainer)", meta:"artificialintelligenceact.eu · free · focus on the 4 risk tiers, prohibited practices, GPAI obligations", link:"https://artificialintelligenceact.eu/"},
+    {cat:"learn", label:"Read: EU AI Act vs NIST AI RMF vs ISO 42001 — plain English comparison", meta:"EC-Council · free · ties the 3 frameworks together", link:"https://www.eccouncil.org/cybersecurity-exchange/responsible-ai-governance/eu-ai-act-nist-ai-rmf-and-iso-iec-42001-a-plain-english-comparison/"},
+    {cat:"project", label:"Project 2 — classify 3-4 AI use cases into the EU AI Act's 4 risk tiers, with reasoning", meta:"Output: 1-page table"},
+    {cat:"linkedin", label:"Post your Project 2 classification table", meta:"Day 1 · portfolio piece #2 goes live"},
+    {cat:"linkedin", label:"Post: 'What I wish I knew before starting AI Governance prep'", meta:"Day 4 · reflective, builds authentic voice"},
+  ]},
+  { phase: "AIGP core prep — 8-10 weeks, alongside your last 2 projects", num:5, range:"Week 5", tasks:[
+    {cat:"exam", label:"Download the official AIGP Body of Knowledge", meta:"IAPP · free · this is your exam blueprint", link:"https://iapp.org/certify/aigp/"},
+    {cat:"exam", label:"Start the AIGP Playbook study guide + practice questions", meta:"aigpplaybook.com · free · written by a 475/500 scorer", link:"https://aigpplaybook.com/aigp-study-guide/"},
+    {cat:"project", label:"Project 3 — Model Card: document an open-source model's use, limits, and known biases", meta:"Hugging Face + Google Model Card template · free"},
+    {cat:"linkedin", label:"Post your Project 3 Model Card", meta:"Day 1 · portfolio piece #3 goes live"},
+    {cat:"linkedin", label:"Comment on 3-5 GRC / AI Governance job postings shared by others", meta:"Day 4 · visibility to hiring managers"},
+  ]},
+  { phase: null, num:6, range:"Week 6", tasks:[
+    {cat:"exam", label:"Continue AIGP prep — 1-2 hrs/day using Playbook practice questions", meta:"Free"},
+    {cat:"project", label:"Project 4 — Bias/Fairness audit on an open dataset, tied explicitly to your Deccan AI QC background", meta:"Kaggle + Colab · free · your strongest differentiator project"},
+    {cat:"linkedin", label:"Post your Project 4 bias/fairness audit", meta:"Day 1 · portfolio piece #4 goes live"},
+    {cat:"linkedin", label:"Post your AIGP study progress — one hard concept explained simply", meta:"Day 4"},
+  ]},
+  { phase: null, num:7, range:"Week 7", tasks:[
+    {cat:"exam", label:"Continue AIGP prep — target 80%+ on practice questions", meta:"Free"},
+    {cat:"project", label:"Consolidate all 4 projects into one portfolio (Notion page or GitHub repo)", meta:"Add a short intro linking Deccan AI to why you're pursuing governance"},
+    {cat:"linkedin", label:"Post the consolidated portfolio with links to all 4 projects", meta:"Day 1"},
+    {cat:"linkedin", label:"Post 'Open to AI Governance / GRC Analyst roles' with portfolio link pinned", meta:"Day 4 · signal your job search"},
+  ]},
+  { phase: "Final AIGP stretch", num:8, range:"Weeks 8–10", tasks:[
+    {cat:"exam", label:"Keep drilling practice questions until wrong answers dry up", meta:"Free · ~1-2 hrs/day"},
+    {cat:"exam", label:"Register for the AIGP exam via Pearson VUE once consistently scoring 80%+", meta:"$649 IAPP member / $799 non-member"},
+    {cat:"linkedin", label:"Keep a steady rhythm: 1 learning post + 1 engagement day per week", meta:"Ongoing, don't let momentum die"},
+  ]},
+  { phase: "Sit the exam", num:11, range:"Week 11", tasks:[
+    {cat:"exam", label:"Sit the AIGP exam — 100 questions, 180 minutes, need 300/500 to pass", meta:"Pearson VUE · $649-799"},
+  ]},
+  { phase: "Practical layer + active applications", num:12, range:"Weeks 12–14", tasks:[
+    {cat:"exam", label:"ISO 42001 Foundation via a budget provider (GSDC / SkillCouncil), not PECB unless a job posting names it", meta:"₹8,000-15,000 (~$100-180)", link:"https://www.iso.org/standard/81230.html"},
+    {cat:"project", label:"Start applying using the hidden job titles list — Tier 5/6 companies first (easier entry), Tier 1/2 in parallel (higher ceiling)", meta:"Portfolio + LinkedIn should be fully live by now"},
+  ]},
+];
+
+let flatTasks = [];
+weeks.forEach((w, wi) => {
+  w.tasks.forEach((t, ti) => { t.id = `w${w.num}_${ti}`; flatTasks.push(t); });
+});
+
+let state = {};
+let currentFilter = "all";
+
+async function loadState(){
+  try{
+    const raw = localStorage.getItem('governance-trail-progress');
+    if(raw){ state = JSON.parse(raw); }
+  }catch(e){ state = {}; }
+  render();
+}
+
+async function saveState(){
+  try{
+    localStorage.setItem('governance-trail-progress', JSON.stringify(state));
+  }catch(e){ /* non-fatal */ }
+}
+
+function render(){
+  const trail = document.getElementById('trail');
+  trail.innerHTML = '';
+  weeks.forEach(w => {
+    if(w.phase){
+      const pl = document.createElement('div');
+      pl.className = 'phase-label';
+      pl.textContent = w.phase;
+      trail.appendChild(pl);
+    }
+    const total = w.tasks.length;
+    const done = w.tasks.filter(t => state[t.id]).length;
+    const allDone = done === total;
+
+    const weekEl = document.createElement('div');
+    weekEl.className = 'week' + (allDone ? ' complete' : '');
+    weekEl.dataset.week = w.num;
+
+    const marker = document.createElement('div');
+    marker.className = 'week-marker';
+    marker.textContent = allDone ? '✓' : w.num;
+    weekEl.appendChild(marker);
+
+    const card = document.createElement('div');
+    card.className = 'week-card';
+
+    const head = document.createElement('div');
+    head.className = 'week-head';
+    head.innerHTML = `
+      <div class="week-title">${w.range}<span class="range">${done} of ${total} steps done</span></div>
+      <div class="week-progress">
+        <div class="mini-bar"><div class="mini-bar-fill" style="width:${total?Math.round(done/total*100):0}%"></div></div>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>`;
+    head.addEventListener('click', () => {
+      weekEl.classList.toggle('open');
+    });
+    card.appendChild(head);
+
+    const body = document.createElement('div');
+    body.className = 'week-body';
+    const list = document.createElement('div');
+    list.className = 'task-list';
+
+    w.tasks.forEach(t => {
+      const row = document.createElement('div');
+      row.className = 'task' + (state[t.id] ? ' done' : '');
+      row.dataset.cat = t.cat;
+      if(currentFilter !== 'all' && currentFilter !== t.cat) row.classList.add('hidden');
+
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = !!state[t.id];
+      cb.addEventListener('change', () => {
+        state[t.id] = cb.checked;
+        saveState();
+        render();
+        updateHeader();
+        reopenWeek(w.num);
+      });
+
+      const textWrap = document.createElement('div');
+      textWrap.className = 'task-text';
+      let html = `<span class="cat-tag ${t.cat}" style="float:right; margin-left:8px;">${CATS[t.cat].label}</span><span class="label">${t.label}</span>`;
+      if(t.meta) html += `<span class="meta">${t.meta}</span>`;
+      if(t.link) html += `<a class="res-link" href="${t.link}" target="_blank" rel="noopener">Open resource</a>`;
+      textWrap.innerHTML = html;
+
+      row.appendChild(cb);
+      row.appendChild(textWrap);
+      list.appendChild(row);
+    });
+
+    body.appendChild(list);
+    card.appendChild(body);
+    weekEl.appendChild(card);
+    trail.appendChild(weekEl);
+  });
+
+  // restore open state
+  openWeeks.forEach(n => {
+    const el = trail.querySelector(`.week[data-week="${n}"]`);
+    if(el) el.classList.add('open');
+  });
+}
+
+let openWeeks = new Set();
+function reopenWeek(n){ openWeeks.add(n); document.querySelectorAll('.week').forEach(el=>{ if(parseInt(el.dataset.week)===n) el.classList.add('open'); }); }
+
+// track open/close clicks to persist visually within session
+document.addEventListener('click', (e) => {
+  const head = e.target.closest('.week-head');
+  if(head){
+    const weekEl = head.closest('.week');
+    const n = parseInt(weekEl.dataset.week);
+    if(weekEl.classList.contains('open')) openWeeks.add(n); else openWeeks.delete(n);
+  }
+});
+
+function updateHeader(){
+  const total = flatTasks.length;
+  const done = flatTasks.filter(t => state[t.id]).length;
+  const pct = total ? Math.round(done/total*100) : 0;
+  const circumference = 238.76;
+  const offset = circumference - (pct/100)*circumference;
+  document.getElementById('ringFg').style.strokeDashoffset = offset;
+  document.getElementById('ringLabel').textContent = pct + '%';
+  document.getElementById('progDetail').textContent = `${done} of ${total} steps complete`;
+
+  let headline = "Let's begin the trail";
+  if(pct >= 100) headline = "You've reached the end of the trail";
+  else if(pct >= 75) headline = "Almost there — the summit is close";
+  else if(pct >= 50) headline = "Halfway there, steady pace";
+  else if(pct >= 25) headline = "Good start — the trail is opening up";
+  else if(pct > 0) headline = "First steps taken";
+  document.getElementById('progHeadline').textContent = headline;
+
+  document.querySelectorAll('.milestone-chip').forEach(chip => {
+    const m = parseInt(chip.dataset.m);
+    if(pct >= m) chip.classList.add('hit'); else chip.classList.remove('hit');
+  });
+}
+
+document.getElementById('filters').addEventListener('click', (e) => {
+  const chip = e.target.closest('.chip');
+  if(!chip) return;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  currentFilter = chip.dataset.cat;
+  document.querySelectorAll('.task').forEach(t => {
+    if(currentFilter === 'all' || t.dataset.cat === currentFilter) t.classList.remove('hidden');
+    else t.classList.add('hidden');
+  });
+});
+
+loadState().then(updateHeader);
+</script>
+
+</body>
+</html>
